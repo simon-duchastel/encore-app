@@ -4,7 +4,7 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import com.duchastel.simon.encoreapp.screens.todolist.TodoListScreen
+import com.duchastel.simon.encoreapp.screens.home.HomeScreen
 import com.slack.circuit.foundation.Circuit
 import com.slack.circuit.foundation.CircuitCompositionLocals
 import com.slack.circuit.foundation.CircuitContent
@@ -22,7 +22,7 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             CircuitCompositionLocals(circuit) {
-                CircuitContent(TodoListScreen)
+                CircuitContent(HomeScreen)
             }
         }
     }

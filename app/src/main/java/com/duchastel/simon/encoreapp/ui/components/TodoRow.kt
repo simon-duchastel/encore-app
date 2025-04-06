@@ -15,6 +15,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.text.style.TextDecoration
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.duchastel.simon.encoreapp.screens.todolist.TodoItem
 import com.duchastel.simon.encoreapp.utils.runIf
@@ -25,12 +26,14 @@ import com.duchastel.simon.encoreapp.utils.runIf
  * @param todoItem The todo item data to display
  * @param onToggleComplete Callback when the todo completion status should be toggled
  * @param modifier Optional modifier for customizing the layout
+ * @param maxLines Maximum number of lines for the text
  */
 @Composable
 fun TodoRow(
     todoItem: TodoItem,
     onToggleComplete: (Boolean) -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    maxLines: Int = Int.MAX_VALUE
 ) {
     val interactionSource = remember { MutableInteractionSource() }
     val isPressed by interactionSource.collectIsPressedAsState()
@@ -61,7 +64,9 @@ fun TodoRow(
             style = MaterialTheme.typography.bodyLarge
                 .runIf(todoItem.isCompleted) {
                     copy(textDecoration = TextDecoration.LineThrough)
-                }
+                },
+            overflow = if (maxLines == 1) TextOverflow.Ellipsis else TextOverflow.Clip,
+            maxLines = maxLines
         )
     }
 }

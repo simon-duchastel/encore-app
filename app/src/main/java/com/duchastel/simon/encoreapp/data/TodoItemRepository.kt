@@ -12,7 +12,10 @@ class TodoItemRepository @Inject constructor() {
     private val initialTodoItems = listOf(
         TodoItem(
             id = "1",
-            text = "Learn Compose",
+            text = """
+                Learn Compose and read lots of blogs and docs so that I understand 
+                everything I need to know to build an app in compose.
+            """.trimIndent(),
             isCompleted = true
         ),
         TodoItem(
