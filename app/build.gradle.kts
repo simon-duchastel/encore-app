@@ -40,6 +40,9 @@ android {
     buildFeatures {
         compose = true
     }
+    testOptions {
+        unitTests.isReturnDefaultValues = true
+    }
 }
 
 ksp {
@@ -65,6 +68,9 @@ dependencies {
     ksp(libs.circuit.codegen)
 
     testImplementation(libs.junit)
+    testImplementation(libs.circuit.test)
+    testImplementation(libs.mockk)
+    testImplementation(libs.coroutinestest)
 
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
