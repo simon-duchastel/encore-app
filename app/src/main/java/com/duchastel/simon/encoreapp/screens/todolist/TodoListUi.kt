@@ -4,11 +4,15 @@ import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.material3.Surface
 import com.duchastel.simon.encoreapp.ui.components.SectionHeader
 import com.duchastel.simon.encoreapp.ui.components.TodoRow
+import com.duchastel.simon.encoreapp.utils.Async
 import com.slack.circuit.codegen.annotations.CircuitInject
 import com.slack.circuit.runtime.ui.Ui
 import dagger.hilt.components.SingletonComponent
@@ -32,21 +36,97 @@ class TodoListUi: Ui<TodoListScreen.State> {
                 SectionHeader(title = "Todo List")
             }
 
-            items(state.todoItems) { todoItem ->
-                TodoRow(
-                    modifier = Modifier
-                        .padding(horizontal = 16.dp, vertical = 8.dp),
-                    todoItem = todoItem,
-                    onToggleComplete = { isCompleted ->
-                        state.emitEvent(
-                            TodoListScreen.Event.TodoItemCheckedChanged(
-                                id = todoItem.id,
-                                isCompleted = isCompleted,
-                            )
+            when (val todoItems = state.todoItems) {
+                is Async.Success -> {
+                    items(todoItems()) { todoItem ->
+                        TodoRow(
+                            modifier = Modifier
+                                .padding(horizontal = 16.dp, vertical = 8.dp),
+                            todoItem = todoItem,
+                            onToggleComplete = { isCompleted ->
+                                state.emitEvent(
+                                    TodoListScreen.Event.TodoItemCheckedChanged(
+                                        id = todoItem.id,
+                                        isCompleted = isCompleted,
+                                    )
+                                )
+                            }
                         )
                     }
-                )
+                }
+                is Async.Uninitialized, is Async.Loading -> {
+                    item {
+                        CircularProgressIndicator()
+                    }
+                }
+                is Async.Fail -> {
+                    item {
+                        CircularProgressIndicator()
+                    }
+                }
             }
         }
+    }
+}
+
+// Previews
+
+@Preview(name = "Todo List - Loading")
+@Composable
+internal fun TodoListLoadingPreview() {
+    Surface {
+        TodoListUi().Content(
+            state = TodoListScreen.State(
+                todoItems = Async.Loading(),
+                emitEvent = {}
+            ),
+            modifier = Modifier
+        )
+    }
+}
+
+@Preview(name = "Todo List - Success")
+@Composable
+internal fun TodoListSuccessPreview() {
+    Surface {
+        TodoListUi().Content(
+            state = TodoListScreen.State(
+                todoItems = Async.Success(
+                    listOf(
+                        TodoItem(
+                            id = "1",
+                            text = "Buy groceries",
+                            isCompleted = false
+                        ),
+                        TodoItem(
+                            id = "2",
+                            text = "Finish project",
+                            isCompleted = true
+                        ),
+                        TodoItem(
+                            id = "3",
+                            text = "Exercise",
+                            isCompleted = false
+                        )
+                    )
+                ),
+                emitEvent = {}
+            ),
+            modifier = Modifier
+        )
+    }
+}
+
+@Preview(name = "Todo List - Error")
+@Composable
+internal fun TodoListErrorPreview() {
+    Surface {
+        TodoListUi().Content(
+            state = TodoListScreen.State(
+                todoItems = Async.Fail(Exception("Failed to load todo items")),
+                emitEvent = {}
+            ),
+            modifier = Modifier
+        )
     }
 }
